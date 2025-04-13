@@ -1,0 +1,21 @@
+diff --git a/components/esp-wolfssl/wolfssl/wolfssl/wolfcrypt/sp_int.h b/components/esp-wolfssl/wolfssl/wolfssl/wolfcrypt/sp_int.h
+index 4b0eeb47d..9896f4789 100644
+--- a/components/esp-wolfssl/wolfssl/wolfssl/wolfcrypt/sp_int.h
++++ b/components/esp-wolfssl/wolfssl/wolfssl/wolfcrypt/sp_int.h
+@@ -27,6 +27,7 @@ This library provides single precision (SP) integer math functions.
+ #ifndef WOLF_CRYPT_SP_INT_H
+ #define WOLF_CRYPT_SP_INT_H
+ 
++#include <stdint.h>
+ #ifndef WOLFSSL_LINUXKM
+ #include <limits.h>
+ #endif
+@@ -149,6 +150,8 @@ extern "C" {
+     #define SP_ULLONG_BITS    0
+ #endif
+ 
++typedef uint64_t sp_uint64;
++typedef  int64_t  sp_int64;
+ 
+ #ifdef WOLFSSL_SP_DIV_32
+ #define WOLFSSL_SP_DIV_WORD_HALF

@@ -19,6 +19,7 @@
   fetchFromGitHub,
   makeWrapper,
   callPackage,
+  runCommand,
 
   python3,
 
@@ -38,7 +39,7 @@
 }:
 
 let
-  src = fetchFromGitHub {
+  src_esp_idf = fetchFromGitHub {
     inherit
       owner
       repo
@@ -47,6 +48,20 @@ let
       ;
     fetchSubmodules = true;
   };
+
+  src_wolfssl = fetchFromGitHub {
+    owner = "espressif";
+    repo = "esp-wolfssl";
+    rev = "822090f62ddb7fbe8401b9a7ec186353a9f0a530";
+    hash = "sha256-E7wDmT99OhKHT7xAvhIhZNgJ/JSlcW4Ji94hMQImFb8=";
+    fetchSubmodules = true;
+  };
+
+  src = runCommand "esp-idf-with-wolfssl-source" {} ''
+    cp -r ${src_esp_idf} $out
+    chmod u+w $out/components
+    cp -r ${src_wolfssl} $out/components/esp-wolfssl
+  '';
 
   allTools = callPackage (import ./tools.nix) {
     toolSpecList = (builtins.fromJSON (builtins.readFile "${src}/tools/tools.json")).tools;
@@ -101,6 +116,10 @@ let
     version = rev;
 
     inherit src;
+
+    patches = [
+      ./wolfssl-stdint.patch
+    ];
 
     # This is so that downstream derivations will have IDF_PATH set.
     setupHook = ./setup-hook.sh;
