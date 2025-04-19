@@ -13,6 +13,7 @@
 , stdenv
 , lib
 , fetchFromGitHub
+, fetchpatch
 , makeWrapper
 , callPackage
 , runCommand
@@ -103,12 +104,16 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "esp-idf";
-  version = rev;
+  version = "5.4.2-1";
 
   inherit src;
 
   patches = [
     ./wolfssl-stdint.patch
+    (fetchpatch {
+      url = "https://github.com/espressif/esp-idf/commit/6d06f5fe441182a20d9d251d49353812e6d8a3f0.patch";
+      hash = "sha256-f2LGXJ/vUWr6ygSQBUFCswP2Pq1qvMVWFuRCb2QujJw=";
+    })
   ];
 
   # This is so that downstream derivations will have IDF_PATH set.
@@ -159,7 +164,7 @@ stdenv.mkDerivation rec {
     # NOTE: This doesn't perfectly replicate the way the commit name is
     # formatted with the standard behavior using `git describe`, but it's
     # still better than nothing.
-    echo "${rev}" > $out/version.txt
+    echo "$version" > $out/version.txt
 
     # Link the Python environment in so that:
     # - The setup hook can set IDF_PYTHON_ENV_PATH to it.
