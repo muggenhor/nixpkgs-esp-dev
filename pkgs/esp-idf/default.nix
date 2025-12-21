@@ -38,7 +38,7 @@
 }:
 
 let
-  src = fetchFromGitHub {
+  src = (fetchFromGitHub {
     inherit
       owner
       repo
@@ -46,6 +46,12 @@ let
       sha256
       ;
     fetchSubmodules = true;
+    name = "${repo}-src-${rev}";
+  }).override {
+    sha256 = "sha256-EVWhwz8MjieCXnksqKwYJPLg0fPmyNczuRvPeSsKBnk=";
+    postFetch = ''
+      (cd "$out" && patch -p1 < ${./tools-gcc-15.2-from-14.2.patch})
+    '';
   };
 
   allTools = callPackage (import ./tools.nix) {
@@ -192,7 +198,7 @@ EOF
   '';
 
     passthru = {
-      inherit tools allTools toolEnv;
+      inherit tools allTools;
     };
   };
   buildExample = callPackage ./build-example.nix { inherit esp-idf; };
